@@ -2,7 +2,7 @@ require 'faker'
 require 'csv'
 
 
-CSV.open('contentes.csv','w') do |csv|
+CSV.open('contents.csv','w') do |csv|
   csv << ['name','weight','price']
   (1..50).map do |i|
     name = Faker::Commerce.product_name
