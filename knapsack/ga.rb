@@ -40,11 +40,8 @@ end
 
 
 g = GA.new
-p g.codemasks
+# p g.codemasks
 p g.calc_fitness
-
-
-
 
 
 
