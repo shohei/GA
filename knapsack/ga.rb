@@ -2,7 +2,7 @@ require 'csv'
 require 'matrix'
 
 class GA
-  attr_accessor :codemasks
+  attr_accessor :codemasks, :fitnesses
 
   @@wmax = 40
   @@individuals = 32
@@ -17,6 +17,14 @@ class GA
     @codemasks = @@individuals.times.map do 
       (1..50).map{rand(0..1)}
     end
+
+    @fitnesses = calc_fitness
+  end
+
+  def calc_fitness
+    @codemasks.map do |codemask|
+      calc_each_fitness(codemask)
+    end
   end
 
   def calc_each_fitness(codemask)
@@ -30,19 +38,20 @@ class GA
     @fitness
   end
 
-  def calc_fitness
-    @codemasks.map do |codemask|
-      calc_each_fitness(codemask)
-    end
+  def selection
+    #elite selection
+    elite_number = @fitnesses.index(@fitnesses.max)
+    @fitnesses.tap{|a| a.delete_at(elite_number)}
+    #roulette selection
+    total_fitness = @fitnesses.inject(:+)
+    @relative_fitnesses = Hash.new
+    @fitnesses.each_with_index{|f,index| @relative_fitnesses[index] = (total_fitness/(f.to_f)).to_i}
+    @relative_fitnesses
   end
 
 end
 
-
-g = GA.new
-# p g.codemasks
-p g.calc_fitness
-
+p GA.new.selection
 
 
 
