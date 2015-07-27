@@ -16,11 +16,18 @@ Gnuplot.open do |gp|
     x = table[:weight]
     y = table[:price]
 
+    # save_image_string = <<-EOS
+    #   set terminal pdf
+    #   set output "graph.pdf"
+    # EOS
+    # plot.arbitrary_lines << save_image_string
+
     plot.data << Gnuplot::DataSet.new( [x, y] ) do |ds|
       # ds.with = "linespoints"
       ds.with = "points"
     end
+
+
   end
 end
-
 
