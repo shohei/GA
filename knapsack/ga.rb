@@ -1,24 +1,26 @@
 require 'csv'
 require 'matrix'
+require 'pry'
 
 class GA
   attr_accessor :codemasks, :fitnesses
 
   @@wmax = 40
-  @@individuals = 32
+  @@num_of_individuals = 32
 
   def initialize
     data = CSV.table('contents.csv')
     names = data[:name]
     @weights = data[:weight]
-    prices = data[:price]
+    @prices = data[:price]
 
-    @prices_vector = Vector.elements(prices)
-    @codemasks = @@individuals.times.map do 
+    @prices_vector = Vector.elements(@prices)
+    @codemasks = @@num_of_individuals.times.map do 
       (1..50).map{rand(0..1)}
     end
 
     @fitnesses = calc_fitness
+    @individuals = []
   end
 
   def calc_fitness
@@ -41,15 +43,22 @@ class GA
   def selection
     #elite selection
     elite_number = @fitnesses.index(@fitnesses.max)
-    #TODO: エリートを削除しただけで使いまわしていない
-    #理想的にはName, Price, Weightを格納した選択された個体集団の
-    #ハッシュを用意すべきか？
-    @fitnesses.tap{|a| a.delete_at(elite_number)}
+    @individuals.push @codemasks[elite_number]
+    @fitnesses.tap{|a| a.delete_at(elite_number)} #remove elite
+    
     #roulette selection
     total_fitness = @fitnesses.inject(:+)
-    @relative_fitnesses = Hash.new
-    @fitnesses.each_with_index{|f,index| @relative_fitnesses[index] = (total_fitness/(f.to_f)).to_i}
-    @relative_fitnesses
+    @relative_fitnesses = [] 
+    @fitnesses.each_with_index do |f,index| 
+      (total_fitness/(f.to_f)).to_i.times do 
+       @relative_fitnesses.push index 
+      end
+    end
+
+    (@@num_of_individuals-1).times do
+      @individuals.push @codemasks[@relative_fitnesses.sample]
+    end
+    @individuals
   end
 
   def crossover
@@ -65,7 +74,8 @@ class GA
 
 end
 
-p GA.new.selection
+binding.pry
+g =  GA.new.selection
 
 
 
