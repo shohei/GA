@@ -41,12 +41,26 @@ class GA
   def selection
     #elite selection
     elite_number = @fitnesses.index(@fitnesses.max)
+    #TODO: エリートを削除しただけで使いまわしていない
+    #理想的にはName, Price, Weightを格納した選択された個体集団の
+    #ハッシュを用意すべきか？
     @fitnesses.tap{|a| a.delete_at(elite_number)}
     #roulette selection
     total_fitness = @fitnesses.inject(:+)
     @relative_fitnesses = Hash.new
     @fitnesses.each_with_index{|f,index| @relative_fitnesses[index] = (total_fitness/(f.to_f)).to_i}
     @relative_fitnesses
+  end
+
+  def crossover
+    #TODO
+    #２点交叉を用いる？
+  end
+
+  def mutation
+    #TODO
+    #ビット反転
+    #反転確率はどのように決めたらよいか？
   end
 
 end
